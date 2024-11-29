@@ -1,11 +1,29 @@
-// Initialize the map with a suitable zoom level
+// Calculate the center point of all institutions
+function calculateOptimalCenter() {
+    if (culturalData.length === 0) return [32.016789, 34.753456]; // Default center if no data
+
+    // Calculate bounds of all points
+    const bounds = L.latLngBounds(
+        culturalData.map(location => [location.lat, location.lon])
+    );
+    
+    return bounds.getCenter();
+}
+
+// Initialize the map with calculated center
+const center = calculateOptimalCenter();
 const map = L.map('map', {
     dragging: true,
     touchZoom: true,
     scrollWheelZoom: true,
     doubleClickZoom: true,
     zoomControl: true
-}).setView([32.016789, 34.753456], 13); // Adjust the coordinates and zoom level as needed
+}).fitBounds(L.latLngBounds(
+    culturalData.map(location => [location.lat, location.lon])
+), {
+    padding: [50, 50], // Add some padding around the bounds
+    maxZoom: 15        // Limit the zoom level
+});
 
 // Add CartoDB tiles instead of OpenStreetMap
 L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
@@ -47,6 +65,164 @@ const mapElements = {};
 function addMarkersToMap() {
     culturalData.forEach((location, index) => {
         const marker = L.marker([location.lat, location.lon]).addTo(map);
+        
+        // Create popup content with modern styling
+        let popupContent = `
+            <div style="
+                text-align: right; 
+                direction: rtl;
+                font-family: Arial, sans-serif;
+                min-width: 280px;
+                max-width: 320px;
+                padding: 10px;
+            ">
+                <h3 style="
+                    margin: 0 0 15px 0;
+                    color: #2c3e50;
+                    font-size: 18px;
+                    border-bottom: 2px solid #3498db;
+                    padding-bottom: 8px;
+                ">${location.name}</h3>`;
+        
+        // Add address if available
+        if (location.address) {
+            popupContent += `
+                <div style="
+                    background: #f8f9fa;
+                    padding: 8px 12px;
+                    border-radius: 6px;
+                    margin-bottom: 12px;
+                    font-size: 14px;
+                ">
+                    <i style="color: #7f8c8d;">📍</i> ${location.address}
+                </div>`;
+        }
+
+        // Add institution types
+        if (location.types && location.types.length > 0) {
+            popupContent += `
+                <div style="margin-bottom: 10px;">
+                    <div style="
+                        font-weight: bold;
+                        color: #34495e;
+                        font-size: 14px;
+                        margin-bottom: 5px;
+                    ">סוג מוסד:</div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 5px;">
+                        ${location.types.map(type => `
+                            <span style="
+                                background-color: ${categoryColors[type]}22;
+                                color: ${categoryColors[type]};
+                                padding: 4px 8px;
+                                border-radius: 4px;
+                                font-size: 12px;
+                                border: 1px solid ${categoryColors[type]}44;
+                            ">${type}</span>
+                        `).join('')}
+                    </div>
+                </div>`;
+        }
+
+        // Add activities
+        if (location.activities && location.activities.length > 0) {
+            popupContent += `
+                <div style="margin-bottom: 10px;">
+                    <div style="
+                        font-weight: bold;
+                        color: #34495e;
+                        font-size: 14px;
+                        margin-bottom: 5px;
+                    ">פעילויות:</div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 5px;">
+                        ${location.activities.map(activity => `
+                            <span style="
+                                background-color: ${activityColors[activity]}22;
+                                color: ${activityColors[activity]};
+                                padding: 4px 8px;
+                                border-radius: 4px;
+                                font-size: 12px;
+                                border: 1px solid ${activityColors[activity]}44;
+                            ">${activity}</span>
+                        `).join('')}
+                    </div>
+                </div>`;
+        }
+
+        // Add target audiences
+        if (location.targetAudiences && location.targetAudiences.length > 0) {
+            popupContent += `
+                <div style="margin-bottom: 10px;">
+                    <div style="
+                        font-weight: bold;
+                        color: #34495e;
+                        font-size: 14px;
+                        margin-bottom: 5px;
+                    ">קהלי יעד:</div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 5px;">
+                        ${location.targetAudiences.map(audience => `
+                            <span style="
+                                background-color: ${audienceColors[audience]}22;
+                                color: ${audienceColors[audience]};
+                                padding: 4px 8px;
+                                border-radius: 4px;
+                                font-size: 12px;
+                                border: 1px solid ${audienceColors[audience]}44;
+                            ">${audience}</span>
+                        `).join('')}
+                    </div>
+                </div>`;
+        }
+
+        // Add art fields
+        if (location.artFields && location.artFields.length > 0) {
+            popupContent += `
+                <div style="margin-bottom: 10px;">
+                    <div style="
+                        font-weight: bold;
+                        color: #34495e;
+                        font-size: 14px;
+                        margin-bottom: 5px;
+                    ">תחומי אמנות:</div>
+                    <div style="
+                        color: #576574;
+                        font-size: 13px;
+                    ">${location.artFields.join(', ')}</div>
+                </div>`;
+        }
+
+        // Add websites if available
+        if (location.websites && location.websites.length > 0) {
+            popupContent += `
+                <div style="
+                    margin-top: 15px;
+                    padding-top: 12px;
+                    border-top: 1px solid #ecf0f1;
+                ">
+                    ${location.websites.map(website => `
+                        <a href="${website}" 
+                           target="_blank"
+                           style="
+                               display: block;
+                               color: #3498db;
+                               text-decoration: none;
+                               font-size: 13px;
+                               margin-bottom: 5px;
+                               overflow-wrap: break-word;
+                           "
+                        >
+                            🔗 ${website}
+                        </a>
+                    `).join('')}
+                </div>`;
+        }
+
+        popupContent += '</div>';
+        
+        // Add popup with enhanced content
+        marker.bindPopup(popupContent, {
+            maxWidth: 350,
+            className: 'custom-popup'
+        });
         
         // Add circles for each category
         const circles = [];
@@ -90,9 +266,6 @@ function addMarkersToMap() {
             });
         }
 
-        // Add popup with institution name
-        marker.bindPopup(location.name);
-        
         // Store marker and circles for this location
         mapElements[location.name] = {
             marker: marker,
