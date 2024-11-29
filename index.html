@@ -464,6 +464,68 @@
         .modal-overlay.show {
             display: block;
         }
+
+        .toggle-side-panel {
+            position: fixed;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 24px;
+            height: 40px;
+            cursor: pointer;
+            z-index: 1000;
+            font-size: 20px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: right 0.3s ease;
+        }
+
+        .toggle-side-panel:hover {
+            background-color: #f5f5f5;
+        }
+
+        .toggle-side-panel.collapsed {
+            right: 10px;
+        }
+
+        .side-panel {
+            transition: transform 0.3s ease;
+        }
+
+        .side-panel.collapsed {
+            transform: translateX(100%);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                position: relative;
+            }
+            
+            .side-panel {
+                position: absolute;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                z-index: 999;
+                background: white;
+            }
+            
+            .toggle-side-panel {
+                display: flex;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .toggle-side-panel {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>

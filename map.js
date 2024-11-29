@@ -531,4 +531,38 @@ resetFiltersBtn.addEventListener('click', () => {
     modalOverlay.classList.remove('show');
 });
 
+// Add side panel toggle functionality
+const sidePanel = document.querySelector('.side-panel');
+const toggleSidePanelBtn = document.createElement('button');
+toggleSidePanelBtn.id = 'toggleSidePanel';
+toggleSidePanelBtn.className = 'toggle-side-panel';
+toggleSidePanelBtn.innerHTML = '&#x2039;'; // Left arrow character
+document.body.appendChild(toggleSidePanelBtn);
+
+toggleSidePanelBtn.addEventListener('click', () => {
+    sidePanel.classList.toggle('collapsed');
+    toggleSidePanelBtn.classList.toggle('collapsed');
+    // Update the arrow direction
+    toggleSidePanelBtn.innerHTML = sidePanel.classList.contains('collapsed') ? '&#x203A;' : '&#x2039;';
+    // Trigger map resize to adjust the view
+    map.invalidateSize();
+});
+
+// Add media query check for mobile
+function checkMobileView() {
+    if (window.innerWidth <= 768) {
+        sidePanel.classList.add('collapsed');
+        toggleSidePanelBtn.classList.add('collapsed');
+        toggleSidePanelBtn.innerHTML = '&#x203A;';
+    } else {
+        sidePanel.classList.remove('collapsed');
+        toggleSidePanelBtn.classList.remove('collapsed');
+        toggleSidePanelBtn.innerHTML = '&#x2039;';
+    }
+}
+
+// Check on load and window resize
+window.addEventListener('load', checkMobileView);
+window.addEventListener('resize', checkMobileView);
+
 
