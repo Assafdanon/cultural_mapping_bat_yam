@@ -2,28 +2,86 @@
 <html dir="rtl" lang="he">
 <head>
     <meta charset="UTF-8">
-    <title>מפת תרבות בת ים</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-search/dist/leaflet-search.min.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מיפוי תרבות בת ים</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
     <style>
         #map {
-            height: 600px;
+            height: 100vh;
             width: 100%;
         }
-        .leaflet-popup-content {
-            text-align: right;
-            direction: rtl;
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        .control-panel {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            max-width: 300px;
+        }
+        .category-group {
+            margin-bottom: 15px;
+        }
+        .category-group h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+        }
+        .category-item {
+            margin: 5px 0;
+        }
+        .category-item label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .color-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 8px;
+        }
+        .legend {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
         }
     </style>
 </head>
 <body>
-    <h1>פעילויות תרבות בבת ים</h1>
     <div id="map"></div>
+    <div class="control-panel">
+        <div class="category-group">
+            <h3>מה זה?</h3>
+            <div id="type-filters"></div>
+        </div>
+        <div class="category-group">
+            <h3>מה עושים שם?</h3>
+            <div id="activity-filters"></div>
+        </div>
+        <div class="category-group">
+            <h3>למי זה מיועד?</h3>
+            <div id="audience-filters"></div>
+        </div>
+    </div>
 
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet-search/dist/leaflet-search.min.js"></script>
-    <script src="https://unpkg.com/leaflet.groupedlayercontrol/dist/leaflet.groupedlayercontrol.min.js"></script>
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- נתונים -->
     <script src="data.js"></script>
+    
+    <!-- הקוד שלנו -->
     <script src="map.js"></script>
 </body>
 </html> 

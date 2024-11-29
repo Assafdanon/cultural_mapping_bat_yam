@@ -6,7 +6,9 @@ const culturalData = [
         lon: 34.760644,
         type: "ספריה",
         targetAudience: "גיל שלישי 60+",
-        website: "https://www.bat-yam.muni.il/he/249/"
+        website: "https://www.bat-yam.muni.il/he/249/",
+        activity: ["מופעים", "נותן שירותים", "ערבי תרבות", "סדנאות"],
+        artField: ["בין/רב תחומי"]
     },
     {
         name: "תרבוטק+ ספריית אביטל",
@@ -15,7 +17,9 @@ const culturalData = [
         lon: 34.760644,
         type: "אתר מורשת תרבותית",
         targetAudience: "קהל רחב, אחר",
-        website: "https://www.facebook.com/tarbutek.batyam"
+        website: "https://www.facebook.com/tarbutek.batyam",
+        activity: [],
+        artField: ["אומנות המילה"]
     },
     {
         name: "תרבוטק+ ספריית אביטל",
@@ -24,25 +28,9 @@ const culturalData = [
         lon: 34.760644,
         type: null,
         targetAudience: "קהל רחב, אחר",
-        website: "https://www.coing.co/BatYam_Tarbutek"
-    },
-    {
-        name: "תרבוטק+ ספריית אביטל",
-        address: null,
-        lat: 32.015439,
-        lon: 34.760644,
-        type: null,
-        targetAudience: "קהל רחב, אחר",
-        website: ""
-    },
-    {
-        name: "קונסרבטיון למוסיקה",
-        address: "ליבורנו 24 בת ים",
-        lat: 32.011559,
-        lon: 34.759953,
-        type: "להקה/קבוצה/אנסמבל/תזמורת (בכל תחום אמנות)",
-        targetAudience: "נוער 12-18",
-        website: ""
+        website: "https://www.coing.co/BatYam_Tarbutek",
+        activity: [],
+        artField: []
     },
     {
         name: "קונסרבטיון למוסיקה",
@@ -50,8 +38,10 @@ const culturalData = [
         lat: 32.011559,
         lon: 34.759953,
         type: "מוסד תרבות (כללי)",
-        targetAudience: "קהל רחב, אחר",
-        website: ""
+        targetAudience: "נוער 12-18",
+        website: "",
+        activity: ["חוגים", "מופעים"],
+        artField: ["מוסיקה"]
     },
     {
         name: "היכל התרבות",
@@ -60,7 +50,9 @@ const culturalData = [
         lon: 34.757244,
         type: "אולם מופעים",
         targetAudience: "",
-        website: ""
+        website: "",
+        activity: ["מופעים"],
+        artField: ["בין/רב תחומי"]
     },
     {
         name: "אודיטוריום בת ים",
@@ -69,7 +61,9 @@ const culturalData = [
         lon: 34.75,
         type: "אולם מופעים",
         targetAudience: "קהל רחב",
-        website: ""
+        website: "",
+        activity: ["מופעים"],
+        artField: ["בין/רב תחומי"]
     },
     {
         name: "המכון לאמנות",
@@ -78,7 +72,9 @@ const culturalData = [
         lon: 34.75,
         type: "מוסד תרבות (כללי)",
         targetAudience: "נוער 12-18, young adults 18-30, קהל רחב",
-        website: ""
+        website: "",
+        activity: ["סדנאות", "חוגים", "תערוכות"],
+        artField: ["אמנות פלסטית"]
     },
     {
         name: "מוזיאון בן ארי - MOBY - מוזיאון בת ים",
@@ -87,7 +83,9 @@ const culturalData = [
         lon: 34.75,
         type: "מוזיאון",
         targetAudience: "קהל רחב",
-        website: ""
+        website: "",
+        activity: ["תערוכות"],
+        artField: ["אמנות פלסטית"]
     },
     {
         name: "בית שלום אש - מוזאוני בת ים",
@@ -96,7 +94,9 @@ const culturalData = [
         lon: 34.75,
         type: "אתר מורשת תרבותית",
         targetAudience: "קהל רחב",
-        website: ""
+        website: "",
+        activity: ["תערוכות"],
+        artField: ["אמנות פלסטית"]
     },
     {
         name: "בית ריבק - מוזיאוני בת ים",
@@ -105,7 +105,9 @@ const culturalData = [
         lon: 34.75,
         type: "מוזיאון",
         targetAudience: "קהל רחב",
-        website: ""
+        website: "",
+        activity: ["סדנאות"],
+        artField: ["בין/רב תחומי"]
     },
     {
         name: "בית-צדיק",
@@ -114,7 +116,9 @@ const culturalData = [
         lon: 34.75,
         type: "מוסד תרבות (כללי)",
         targetAudience: "ילדים 5-12, נוער 12-18, משפחות צעירות 30+",
-        website: ""
+        website: "",
+        activity: ["חוגים"],
+        artField: ["מרכזים קהילתיים (מתנ\"ס)"]
     },
     {
         name: "גאולים",
@@ -123,7 +127,9 @@ const culturalData = [
         lon: 34.75,
         type: "מוסד תרבות (כללי)",
         targetAudience: "ילדים 5-12, young adults 18-30, משפחות צעירות 30+",
-        website: ""
+        website: "",
+        activity: ["חוגים"],
+        artField: ["מרכזים קהילתיים (מתנ\"ס)"]
     },
     {
         name: "גורדון",
@@ -132,7 +138,9 @@ const culturalData = [
         lon: 34.75,
         type: "מוסד תרבות (כללי)",
         targetAudience: "ילדים 5-12, young adults 18-30, משפחות צעירות 30+",
-        website: ""
+        website: "",
+        activity: ["חוגים"],
+        artField: ["מרכזים קהילתיים (מתנ\"ס)"]
     },
     {
         name: "הבונים",
@@ -141,7 +149,9 @@ const culturalData = [
         lon: 34.75,
         type: "מוסד תרבות (כללי)",
         targetAudience: "ילדים 5-12, נוער 12-18, משפחות צעירות 30+",
-        website: ""
+        website: "",
+        activity: ["חוגים"],
+        artField: ["מרכזים קהילתיים (מתנ\"ס)"]
     },
     {
         name: "יגלום",
@@ -150,7 +160,9 @@ const culturalData = [
         lon: 34.75,
         type: "מוסד תרבות (כללי)",
         targetAudience: "ילדים 5-12, נוער 12-18",
-        website: ""
+        website: "",
+        activity: ["חוגים"],
+        artField: ["מרכזים קהילתיים (מתנ\"ס)"]
     },
     {
         name: "כותר-פיס",
@@ -159,7 +171,9 @@ const culturalData = [
         lon: 34.75,
         type: "מוסד תרבות (כללי)",
         targetAudience: "ילדים 5-12, young adults 18-30",
-        website: ""
+        website: "",
+        activity: ["חוגים"],
+        artField: ["מרכזים קהילתיים (מתנ\"ס)"]
     },
     {
         name: "כנרת",
@@ -168,6 +182,19 @@ const culturalData = [
         lon: 34.75,
         type: "מוסד תרבות (כללי)",
         targetAudience: "ילדים 5-12, נוער 12-18, משפחות צעירות 30+",
-        website: ""
+        website: "",
+        activity: ["חוגים"],
+        artField: ["מרכזים קהילתיים (מתנ\"ס)"]
+    },
+    {
+        name: "עופר",
+        address: "הבנים 5 בת-ים",
+        lat: 32.0167,
+        lon: 34.75,
+        type: "מוסד תרבות (כללי)",
+        targetAudience: "",
+        website: "",
+        activity: ["חוגים"],
+        artField: ["מרכזים קהילתיים (מתנ\"ס)"]
     }
 ];
