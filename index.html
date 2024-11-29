@@ -97,38 +97,59 @@
 
         .legend {
             background: white;
-            padding: 10px;
-            border-radius: 4px;
-            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
         }
 
         .legend-section {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
-        
+
         .legend-section h4 {
             margin: 10px 0;
-            font-size: 14px;
             color: #333;
+            font-size: 16px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 5px;
         }
-        
+
         .legend-items {
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 8px;
         }
-        
+
         .legend-item {
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 12px;
+            padding: 4px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
         }
-        
+
+        .legend-item:hover {
+            background-color: #f5f5f5;
+        }
+
+        .legend-item input[type="checkbox"] {
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .legend-item label {
+            cursor: pointer;
+            font-size: 14px;
+            flex: 1;
+        }
+
         .color-box {
             width: 16px;
             height: 16px;
             border-radius: 4px;
+            display: inline-block;
         }
 
         .ring-example {
@@ -198,6 +219,232 @@
             display: inline-block;
             margin: 2px 0;
         }
+
+        .filter-button {
+            width: 100%;
+            padding: 12px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 15px;
+            transition: background-color 0.3s;
+        }
+
+        .filter-button:hover {
+            background-color: #2980b9;
+        }
+
+        .legend-toggle {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 24px;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .legend-modal {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            padding: 20px;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 1001;
+            max-height: 80vh;
+            overflow-y: auto;
+            transition: transform 0.3s ease-out;
+        }
+
+        .legend-modal.show {
+            display: block;
+            transform: translateY(0);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: 10px 0;
+        }
+
+        .toggle-icon {
+            transition: transform 0.3s;
+        }
+
+        .legend-section.collapsed .toggle-icon {
+            transform: rotate(-90deg);
+        }
+
+        .legend-section.collapsed .legend-items {
+            display: none;
+        }
+
+        .legend-items {
+            transition: max-height 0.3s ease-out;
+            overflow: hidden;
+        }
+
+        .legend-modal {
+            max-height: 90vh; /* Increased height */
+            padding: 25px;
+        }
+
+        .legend h3 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 20px;
+        }
+
+        .legend-section {
+            margin-bottom: 30px;
+        }
+
+        .legend-section h4 {
+            color: #34495e;
+            font-size: 18px;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .legend-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+            padding: 0 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+        }
+
+        .legend-item:hover {
+            background-color: #e9ecef;
+        }
+
+        .color-box {
+            width: 18px;
+            height: 18px;
+            margin-right: 8px;
+            border-radius: 4px;
+        }
+
+        .filter-button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .filter-button:hover {
+            background-color: #2980b9;
+        }
+
+        .legend-toggle {
+            padding: 12px 30px;
+            font-size: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .legend-items {
+                grid-template-columns: 1fr;
+            }
+            
+            .legend-modal {
+                padding: 15px;
+            }
+        }
+
+        .legend-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close-button {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px 10px;
+            color: #666;
+        }
+
+        .close-button:hover {
+            color: #333;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            align-items: center;
+        }
+
+        .filter-button, .reset-button {
+            height: 40px;
+            line-height: 40px;
+            padding: 0 20px;
+            font-size: 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .filter-button {
+            flex: 3;  /* Takes up 3 parts of the space */
+            background-color: #3498db;
+            color: white;
+            border: none;
+        }
+
+        .reset-button {
+            flex: 1;  /* Takes up 1 part of the space */
+            background-color: #f8f9fa;
+            color: #666;
+            border: 1px solid #ddd;
+        }
+
+        .filter-button:hover {
+            background-color: #2980b9;
+        }
+
+        .reset-button:hover {
+            background-color: #e9ecef;
+            color: #333;
+        }
     </style>
 </head>
 <body>
@@ -208,102 +455,143 @@
     
     <div class="container">
         <div class="side-panel">
-            <h2>מוסדות תרבות</h2>
-            <div id="institution-list"></div>
-            <div class="legend">
-                <h3>מקרא</h3>
-                <div class="ring-example thin">סוג מוסד</div>
-                <div class="ring-example medium">פעילויות</div>
-                <div class="ring-example thick">קהלי יעד</div>
+            <h2 style="
+                text-align: center;
+                color: #2c3e50;
+                margin: 20px 0;
+                font-size: 24px;
+                border-bottom: 2px solid #3498db;
+                padding-bottom: 10px;
+            ">מוסדות תרבות בת ים</h2>
+            
+            <!-- Legend Toggle Button -->
+            <button id="toggleLegend" class="legend-toggle">
+                סנן לפי קטגוריות
+            </button>
 
+            <div id="institution-list"></div>
+        </div>
+        <div id="map" style="height: 100%;"></div>
+    </div>
+
+    <!-- Legend Modal -->
+    <div id="legendModal" class="legend-modal">
+        <div class="legend-content">
+            <div class="legend">
+                <div class="legend-header">
+                    <h3>סינון לפי קטגוריות</h3>
+                    <button class="close-button">✕</button>
+                </div>
+                
                 <div class="legend-section">
-                    <h4>סוג מוסד</h4>
+                    <h4>סוגי מוסדות - מה זה?</h4>
                     <div class="legend-items">
                         <div class="legend-item">
+                            <input type="checkbox" id="types-ספריה" checked>
                             <span class="color-box" style="background-color: #2196F3"></span>
-                            <span>ספריה</span>
+                            <label for="types-ספריה">ספריה</label>
                         </div>
                         <div class="legend-item">
+                            <input type="checkbox" id="types-אתר מורשת תרבותית" checked>
                             <span class="color-box" style="background-color: #4CAF50"></span>
-                            <span>אתר מורשת תרבותית</span>
+                            <label for="types-אתר מורשת תרבותית">אתר מורשת תרבותית</label>
                         </div>
                         <div class="legend-item">
+                            <input type="checkbox" id="types-מוסד תרבות (כללי)" checked>
                             <span class="color-box" style="background-color: #9C27B0"></span>
-                            <span>מוסד תרבות (כללי)</span>
+                            <label for="types-מוסד תרבות (כללי)">מוסד תרבות (כללי)</label>
                         </div>
                         <div class="legend-item">
+                            <input type="checkbox" id="types-אולם מופעים" checked>
                             <span class="color-box" style="background-color: #FF9800"></span>
-                            <span>אולם מופעים</span>
+                            <label for="types-אולם מופעים">אולם מופעים</label>
                         </div>
                         <div class="legend-item">
+                            <input type="checkbox" id="types-מוזיאון" checked>
                             <span class="color-box" style="background-color: #F44336"></span>
-                            <span>מוזיאון</span>
+                            <label for="types-מוזיאון">מוזיאון</label>
                         </div>
                     </div>
                 </div>
                 
                 <div class="legend-section">
-                    <h4>פעילויות</h4>
+                    <h4>סוגי פעילויות - מה עושים במקום?</h4>
                     <div class="legend-items">
                         <div class="legend-item">
+                            <input type="checkbox" id="activities-מופעים" checked>
                             <span class="color-box" style="background-color: #E91E63"></span>
-                            <span>מופעים</span>
+                            <label for="activities-מופעים">מופעים</label>
                         </div>
                         <div class="legend-item">
+                            <input type="checkbox" id="activities-נותן שירותים" checked>
                             <span class="color-box" style="background-color: #00BCD4"></span>
-                            <span>נותן שירותים</span>
+                            <label for="activities-נותן שירותים">נותן שירותים</label>
                         </div>
                         <div class="legend-item">
+                            <input type="checkbox" id="activities-ערבי תרבות" checked>
                             <span class="color-box" style="background-color: #FFC107"></span>
-                            <span>ערבי תרבות</span>
+                            <label for="activities-ערבי תרבות">ערבי תרבות</label>
                         </div>
                         <div class="legend-item">
+                            <input type="checkbox" id="activities-סדנאות" checked>
                             <span class="color-box" style="background-color: #795548"></span>
-                            <span>סדנאות</span>
+                            <label for="activities-סדנאות">סדנאות</label>
                         </div>
                         <div class="legend-item">
+                            <input type="checkbox" id="activities-חוגים" checked>
                             <span class="color-box" style="background-color: #607D8B"></span>
-                            <span>חוגים</span>
+                            <label for="activities-חוגים">חוגים</label>
                         </div>
                         <div class="legend-item">
+                            <input type="checkbox" id="activities-תערוכות" checked>
                             <span class="color-box" style="background-color: #8BC34A"></span>
-                            <span>תערוכות</span>
+                            <label for="activities-תערוכות">תערוכות</label>
                         </div>
                     </div>
                 </div>
                 
                 <div class="legend-section">
-                    <h4>קהלי יעד</h4>
+                    <h4>קהלי יעד - למי זה מיועד?</h4>
                     <div class="legend-items">
                         <div class="legend-item">
+                            <input type="checkbox" id="audiences-ילדים 5-12" checked>
                             <span class="color-box" style="background-color: #3F51B5"></span>
-                            <span>ידים 5-12</span>
+                            <label for="audiences-ילדים 5-12">ילדים 5-12</label>
                         </div>
                         <div class="legend-item">
+                            <input type="checkbox" id="audiences-נוער 12-18" checked>
                             <span class="color-box" style="background-color: #009688"></span>
-                            <span>נוער 12-18</span>
+                            <label for="audiences-נוער 12-18">נוער 12-18</label>
                         </div>
                         <div class="legend-item">
+                            <input type="checkbox" id="audiences-young adults 18-30" checked>
                             <span class="color-box" style="background-color: #FF5722"></span>
-                            <span>young adults 18-30</span>
+                            <label for="audiences-young adults 18-30">צעירים 18-30</label>
                         </div>
                         <div class="legend-item">
+                            <input type="checkbox" id="audiences-משפחות צעירות 30+" checked>
                             <span class="color-box" style="background-color: #9E9E9E"></span>
-                            <span>משפחות צעירות 30+</span>
+                            <label for="audiences-משפחות צעירות 30+">משפחות צעירות 30+</label>
                         </div>
                         <div class="legend-item">
+                            <input type="checkbox" id="audiences-גיל שלישי 60+" checked>
                             <span class="color-box" style="background-color: #FF4081"></span>
-                            <span>גיל שלישי 60+</span>
+                            <label for="audiences-גיל שלישי 60+">גיל שלישי 60+</label>
                         </div>
                         <div class="legend-item">
+                            <input type="checkbox" id="audiences-קהל רחב" checked>
                             <span class="color-box" style="background-color: #673AB7"></span>
-                            <span>קהל רחב</span>
+                            <label for="audiences-קהל רחב">קהל רחב</label>
                         </div>
                     </div>
+                </div>
+
+                <div class="filter-buttons">
+                    <button id="applyFilters" class="filter-button">החל סינון</button>
+                    <button id="resetFilters" class="reset-button">בטל סינון</button>
                 </div>
             </div>
         </div>
-        <div id="map" style="height: 100%;"></div>
     </div>
 
     <!-- Scripts -->

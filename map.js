@@ -274,144 +274,258 @@ function addMarkersToMap() {
     });
 }
 
+// Update filters when checkboxes change
+document.querySelectorAll('.legend-item input[type="checkbox"]').forEach(checkbox => {
+    checkbox.addEventListener('change', (e) => {
+        const [category, value] = e.target.id.split('-');
+        // אין צורך לעדכן את אובייקט filters כי אנחנו בודקים ישירות את ה-checkboxes
+    });
+});
+
+// עדכון פונקציית matchesFilters להיות פשוטה יותר
+function matchesFilters(institution) {
+    // בדיקת סוגי מוסדות
+    const typeMatch = institution.types.some(type => 
+        document.getElementById(`types-${type}`).checked
+    );
+
+    // בדיקת פעילויות
+    const activityMatch = institution.activities.some(activity => 
+        document.getElementById(`activities-${activity}`).checked
+    );
+
+    // בדיקת קהלי יעד
+    const audienceMatch = institution.targetAudiences.some(audience => 
+        document.getElementById(`audiences-${audience}`).checked
+    );
+
+    return typeMatch && activityMatch && audienceMatch;
+}
+
+// Update visibility of markers and list items
+function updateVisibility() {
+    culturalData.forEach(location => {
+        const elements = mapElements[location.name];
+        const isVisible = matchesFilters(location);
+        
+        // Update marker and circles visibility
+        if (isVisible) {
+            elements.marker.addTo(map);
+            elements.circles.forEach(circle => circle.addTo(map));
+        } else {
+            elements.marker.remove();
+            elements.circles.forEach(circle => circle.remove());
+        }
+    });
+    
+    // Update institution list
+    updateInstitutionList();
+}
+
+// Update the institution list function to respect filters
 function updateInstitutionList() {
     const institutionList = document.getElementById('institution-list');
     institutionList.innerHTML = '';
     
-    culturalData.sort((a, b) => a.name.localeCompare(b.name)).forEach(location => {
-        const item = document.createElement('div');
-        item.className = 'institution-item';
-        
-        // Add click handler to focus on the institution
-        item.addEventListener('click', () => {
-            // Center map on location
-            map.setView([location.lat, location.lon], 15);
+    culturalData
+        .filter(location => matchesFilters(location))
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .forEach(location => {
+            const item = document.createElement('div');
+            item.className = 'institution-item';
             
-            // Open the popup
-            mapElements[location.name].marker.openPopup();
-            
-            // Highlight the circles
-            mapElements[location.name].circles.forEach(circle => {
-                circle.setStyle({
-                    weight: 3,
-                    opacity: 1
-                });
+            // Add click handler to focus on the institution
+            item.addEventListener('click', () => {
+                // Center map on location
+                map.setView([location.lat, location.lon], 15);
                 
-                // Reset style after 2 seconds
-                setTimeout(() => {
+                // Open the popup
+                mapElements[location.name].marker.openPopup();
+                
+                // Highlight the circles
+                mapElements[location.name].circles.forEach(circle => {
                     circle.setStyle({
-                        weight: 1,
-                        opacity: 0.8
+                        weight: 3,
+                        opacity: 1
                     });
-                }, 2000);
+                    
+                    // Reset style after 2 seconds
+                    setTimeout(() => {
+                        circle.setStyle({
+                            weight: 1,
+                            opacity: 0.8
+                        });
+                    }, 2000);
+                });
             });
+            
+            // הוספת שם המוסד
+            const nameContainer = document.createElement('div');
+            nameContainer.className = 'name';
+            nameContainer.textContent = location.name;
+            
+            // יצירת מיכל לכל הקטגוריות
+            const allCategoriesContainer = document.createElement('div');
+            allCategoriesContainer.className = 'all-categories';
+            
+            // סוגי מוסד
+            if (location.types && location.types.length > 0) {
+                const typesContainer = document.createElement('div');
+                typesContainer.className = 'category-row';
+                
+                const typesLabel = document.createElement('span');
+                typesLabel.className = 'category-label';
+                typesLabel.textContent = 'סוג מוסד:';
+                typesContainer.appendChild(typesLabel);
+                
+                location.types.forEach(type => {
+                    const tag = document.createElement('span');
+                    tag.className = 'category-tag';
+                    tag.style.backgroundColor = categoryColors[type];
+                    tag.textContent = type;
+
+                    // Add the category name in smaller text
+                    const categoryName = document.createElement('span');
+                    categoryName.className = 'category-name';
+                    categoryName.textContent = ` (${type})`; // Display the name in parentheses
+                    categoryName.style.fontSize = '10px'; // Adjust font size as needed
+                    categoryName.style.color = '#666'; // Adjust color as needed
+
+                    typesContainer.appendChild(tag);
+                    typesContainer.appendChild(categoryName);
+                });
+                allCategoriesContainer.appendChild(typesContainer);
+            }
+            
+            // פעילויות
+            if (location.activities && location.activities.length > 0) {
+                const activitiesContainer = document.createElement('div');
+                activitiesContainer.className = 'category-row';
+                
+                const activitiesLabel = document.createElement('span');
+                activitiesLabel.className = 'category-label';
+                activitiesLabel.textContent = 'פעילויות:';
+                activitiesContainer.appendChild(activitiesLabel);
+                
+                location.activities.forEach(activity => {
+                    const tag = document.createElement('span');
+                    tag.className = 'category-tag';
+                    tag.style.backgroundColor = activityColors[activity];
+                    tag.textContent = activity;
+
+                    // Add the activity name in smaller text
+                    const activityName = document.createElement('span');
+                    activityName.className = 'activity-name';
+                    activityName.textContent = ` (${activity})`; // Display the name in parentheses
+                    activityName.style.fontSize = '10px'; // Adjust font size as needed
+                    activityName.style.color = '#666'; // Adjust color as needed
+
+                    activitiesContainer.appendChild(tag);
+                    activitiesContainer.appendChild(activityName);
+                });
+                allCategoriesContainer.appendChild(activitiesContainer);
+            }
+            
+            // קהלי יעד
+            if (location.targetAudiences && location.targetAudiences.length > 0) {
+                const audiencesContainer = document.createElement('div');
+                audiencesContainer.className = 'category-row';
+                
+                const audiencesLabel = document.createElement('span');
+                audiencesLabel.className = 'category-label';
+                audiencesLabel.textContent = 'קהלי יעד:';
+                audiencesContainer.appendChild(audiencesLabel);
+                
+                location.targetAudiences.forEach(audience => {
+                    const tag = document.createElement('span');
+                    tag.className = 'category-tag';
+                    tag.style.backgroundColor = audienceColors[audience];
+                    tag.textContent = audience;
+
+                    // Add the audience name in smaller text
+                    const audienceName = document.createElement('span');
+                    audienceName.className = 'audience-name';
+                    audienceName.textContent = ` (${audience})`; // Display the name in parentheses
+                    audienceName.style.fontSize = '10px'; // Adjust font size as needed
+                    audienceName.style.color = '#666'; // Adjust color as needed
+
+                    audiencesContainer.appendChild(tag);
+                    audiencesContainer.appendChild(audienceName);
+                });
+                allCategoriesContainer.appendChild(audiencesContainer);
+            }
+            
+            // הרכבת הפריט
+            item.appendChild(nameContainer);
+            item.appendChild(allCategoriesContainer);
+            
+            institutionList.appendChild(item);
         });
-        
-        // הוספת שם המוסד
-        const nameContainer = document.createElement('div');
-        nameContainer.className = 'name';
-        nameContainer.textContent = location.name;
-        
-        // יצירת מיכל לכל הקטגוריות
-        const allCategoriesContainer = document.createElement('div');
-        allCategoriesContainer.className = 'all-categories';
-        
-        // סוגי מוסד
-        if (location.types && location.types.length > 0) {
-            const typesContainer = document.createElement('div');
-            typesContainer.className = 'category-row';
-            
-            const typesLabel = document.createElement('span');
-            typesLabel.className = 'category-label';
-            typesLabel.textContent = 'סוג מוסד:';
-            typesContainer.appendChild(typesLabel);
-            
-            location.types.forEach(type => {
-                const tag = document.createElement('span');
-                tag.className = 'category-tag';
-                tag.style.backgroundColor = categoryColors[type];
-                tag.textContent = type;
-
-                // Add the category name in smaller text
-                const categoryName = document.createElement('span');
-                categoryName.className = 'category-name';
-                categoryName.textContent = ` (${type})`; // Display the name in parentheses
-                categoryName.style.fontSize = '10px'; // Adjust font size as needed
-                categoryName.style.color = '#666'; // Adjust color as needed
-
-                typesContainer.appendChild(tag);
-                typesContainer.appendChild(categoryName);
-            });
-            allCategoriesContainer.appendChild(typesContainer);
-        }
-        
-        // פעילויות
-        if (location.activities && location.activities.length > 0) {
-            const activitiesContainer = document.createElement('div');
-            activitiesContainer.className = 'category-row';
-            
-            const activitiesLabel = document.createElement('span');
-            activitiesLabel.className = 'category-label';
-            activitiesLabel.textContent = 'פעילויות:';
-            activitiesContainer.appendChild(activitiesLabel);
-            
-            location.activities.forEach(activity => {
-                const tag = document.createElement('span');
-                tag.className = 'category-tag';
-                tag.style.backgroundColor = activityColors[activity];
-                tag.textContent = activity;
-
-                // Add the activity name in smaller text
-                const activityName = document.createElement('span');
-                activityName.className = 'activity-name';
-                activityName.textContent = ` (${activity})`; // Display the name in parentheses
-                activityName.style.fontSize = '10px'; // Adjust font size as needed
-                activityName.style.color = '#666'; // Adjust color as needed
-
-                activitiesContainer.appendChild(tag);
-                activitiesContainer.appendChild(activityName);
-            });
-            allCategoriesContainer.appendChild(activitiesContainer);
-        }
-        
-        // קהלי יעד
-        if (location.targetAudiences && location.targetAudiences.length > 0) {
-            const audiencesContainer = document.createElement('div');
-            audiencesContainer.className = 'category-row';
-            
-            const audiencesLabel = document.createElement('span');
-            audiencesLabel.className = 'category-label';
-            audiencesLabel.textContent = 'קהלי יעד:';
-            audiencesContainer.appendChild(audiencesLabel);
-            
-            location.targetAudiences.forEach(audience => {
-                const tag = document.createElement('span');
-                tag.className = 'category-tag';
-                tag.style.backgroundColor = audienceColors[audience];
-                tag.textContent = audience;
-
-                // Add the audience name in smaller text
-                const audienceName = document.createElement('span');
-                audienceName.className = 'audience-name';
-                audienceName.textContent = ` (${audience})`; // Display the name in parentheses
-                audienceName.style.fontSize = '10px'; // Adjust font size as needed
-                audienceName.style.color = '#666'; // Adjust color as needed
-
-                audiencesContainer.appendChild(tag);
-                audiencesContainer.appendChild(audienceName);
-            });
-            allCategoriesContainer.appendChild(audiencesContainer);
-        }
-        
-        // הרכבת הפריט
-        item.appendChild(nameContainer);
-        item.appendChild(allCategoriesContainer);
-        
-        institutionList.appendChild(item);
-    });
 }
 
 // קריאה לפונקציות להצגת המידע
 addMarkersToMap();
 updateInstitutionList();
+
+// Add toggle functionality for legend sections
+function toggleSection(header) {
+    const section = header.parentElement;
+    section.classList.toggle('collapsed');
+}
+
+// Add legend modal functionality
+const legendModal = document.getElementById('legendModal');
+const toggleLegendBtn = document.getElementById('toggleLegend');
+const applyFiltersBtn = document.getElementById('applyFilters');
+const resetFiltersBtn = document.getElementById('resetFilters');
+const closeBtn = document.querySelector('.close-button');
+
+// Toggle modal
+toggleLegendBtn.addEventListener('click', () => {
+    legendModal.classList.toggle('show');
+});
+
+// Close modal when clicking outside
+legendModal.addEventListener('click', (e) => {
+    if (e.target === legendModal) {
+        legendModal.classList.remove('show');
+    }
+});
+
+// Close button functionality
+closeBtn.addEventListener('click', () => {
+    legendModal.classList.remove('show');
+});
+
+// Apply filters
+applyFiltersBtn.addEventListener('click', () => {
+    updateVisibility();
+    legendModal.classList.remove('show');
+});
+
+// Reset filters
+resetFiltersBtn.addEventListener('click', () => {
+    // Reset all checkboxes to checked
+    document.querySelectorAll('.legend-item input[type="checkbox"]').forEach(checkbox => {
+        checkbox.checked = true;
+    });
+    
+    // Clear filters
+    filters.types.clear();
+    filters.activities.clear();
+    filters.audiences.clear();
+    
+    // Update visibility to show all markers
+    updateVisibility();
+    
+    // Close modal
+    legendModal.classList.remove('show');
+});
+
+// Initialize all sections as collapsed except the first one
+document.querySelectorAll('.legend-section').forEach((section, index) => {
+    if (index !== 0) {
+        section.classList.add('collapsed');
+    }
+});
 
