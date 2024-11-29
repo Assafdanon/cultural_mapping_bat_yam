@@ -104,7 +104,7 @@
         }
 
         .legend-section {
-            margin-bottom: 15px;
+            margin-bottom: 30px;
         }
 
         .legend-section h4 {
@@ -116,9 +116,12 @@
         }
 
         .legend-items {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+            padding: 0 10px;
+            max-height: none;
+            overflow: visible;
         }
 
         .legend-item {
@@ -256,22 +259,22 @@
         .legend-modal {
             display: none;
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             background-color: white;
             padding: 20px;
-            border-radius: 20px 20px 0 0;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-            z-index: 1001;
+            border-radius: 12px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.2);
+            z-index: 9999;
+            width: 80%;
+            max-width: 600px;
             max-height: 80vh;
             overflow-y: auto;
-            transition: transform 0.3s ease-out;
         }
 
         .legend-modal.show {
             display: block;
-            transform: translateY(0);
         }
 
         .section-header {
@@ -445,6 +448,22 @@
             background-color: #e9ecef;
             color: #333;
         }
+
+        /* הוספת שכבת overlay */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 9998;
+        }
+
+        .modal-overlay.show {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -473,6 +492,9 @@
         </div>
         <div id="map" style="height: 100%;"></div>
     </div>
+
+    <!-- הוספת שכבת overlay לפני המודל -->
+    <div class="modal-overlay"></div>
 
     <!-- Legend Modal -->
     <div id="legendModal" class="legend-modal">
@@ -515,7 +537,7 @@
                 </div>
                 
                 <div class="legend-section">
-                    <h4>סוגי פעילויות - מה עושים במקום?</h4>
+                    <h4>סוגי פעילויות - מה עושים?</h4>
                     <div class="legend-items">
                         <div class="legend-item">
                             <input type="checkbox" id="activities-מופעים" checked>
@@ -571,7 +593,7 @@
                         <div class="legend-item">
                             <input type="checkbox" id="audiences-משפחות צעירות 30+" checked>
                             <span class="color-box" style="background-color: #9E9E9E"></span>
-                            <label for="audiences-משפחות צעירות 30+">משפחות צעירות 30+</label>
+                            <label for="audiences-משפחות צעירות 30+">שפחות צעירות 30+</label>
                         </div>
                         <div class="legend-item">
                             <input type="checkbox" id="audiences-גיל שלישי 60+" checked>

@@ -277,12 +277,11 @@ function addMarkersToMap() {
 // Update filters when checkboxes change
 document.querySelectorAll('.legend-item input[type="checkbox"]').forEach(checkbox => {
     checkbox.addEventListener('change', (e) => {
-        const [category, value] = e.target.id.split('-');
-        // אין צורך לעדכן את אובייקט filters כי אנחנו בודקים ישירות את ה-checkboxes
+        updateVisibility();
     });
 });
 
-// עדכון פונקציית matchesFilters להיות פשוטה יותר
+// פונקציית matchesFilters מפושטת
 function matchesFilters(institution) {
     // בדיקת סוגי מוסדות
     const typeMatch = institution.types.some(type => 
@@ -468,13 +467,21 @@ addMarkersToMap();
 updateInstitutionList();
 
 // Add toggle functionality for legend sections
-function toggleSection(header) {
-    const section = header.parentElement;
-    section.classList.toggle('collapsed');
-}
+document.querySelectorAll('.legend-section h4').forEach(header => {
+    header.addEventListener('click', () => {
+        const section = header.parentElement;
+        section.classList.toggle('collapsed');
+    });
+});
+
+// Initialize sections as expanded (remove any collapsed state)
+document.querySelectorAll('.legend-section').forEach(section => {
+    section.classList.remove('collapsed');
+});
 
 // Add legend modal functionality
 const legendModal = document.getElementById('legendModal');
+const modalOverlay = document.querySelector('.modal-overlay');
 const toggleLegendBtn = document.getElementById('toggleLegend');
 const applyFiltersBtn = document.getElementById('applyFilters');
 const resetFiltersBtn = document.getElementById('resetFilters');
@@ -483,32 +490,33 @@ const closeBtn = document.querySelector('.close-button');
 // Toggle modal
 toggleLegendBtn.addEventListener('click', () => {
     legendModal.classList.toggle('show');
+    modalOverlay.classList.toggle('show');
 });
 
 // Close modal when clicking outside
-legendModal.addEventListener('click', (e) => {
-    if (e.target === legendModal) {
-        legendModal.classList.remove('show');
-    }
+modalOverlay.addEventListener('click', () => {
+    legendModal.classList.remove('show');
+    modalOverlay.classList.remove('show');
 });
 
 // Close button functionality
 closeBtn.addEventListener('click', () => {
     legendModal.classList.remove('show');
+    modalOverlay.classList.remove('show');
 });
 
 // Apply filters
 applyFiltersBtn.addEventListener('click', () => {
     updateVisibility();
     legendModal.classList.remove('show');
+    modalOverlay.classList.remove('show');
 });
 
 // Reset filters
 resetFiltersBtn.addEventListener('click', () => {
     // Reset all checkboxes to checked
     document.querySelectorAll('.legend-item input[type="checkbox"]').forEach(checkbox => {
-        checkbox.checked = true;
-    });
+        checkbox.checked = true;    });
     
     // Clear filters
     filters.types.clear();
@@ -520,12 +528,7 @@ resetFiltersBtn.addEventListener('click', () => {
     
     // Close modal
     legendModal.classList.remove('show');
+    modalOverlay.classList.remove('show');
 });
 
-// Initialize all sections as collapsed except the first one
-document.querySelectorAll('.legend-section').forEach((section, index) => {
-    if (index !== 0) {
-        section.classList.add('collapsed');
-    }
-});
 
