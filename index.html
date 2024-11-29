@@ -9,79 +9,306 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     
     <style>
-        #map {
-            height: 100vh;
-            width: 100%;
-        }
         body {
             margin: 0;
             padding: 0;
+            font-family: Arial, sans-serif;
         }
-        .control-panel {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: white;
-            padding: 15px;
-            border-radius: 5px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.2);
-            z-index: 1000;
-            max-width: 300px;
+
+        .header {
+            padding: 20px;
+            background: #f8f9fa;
+            text-align: center;
         }
-        .category-group {
-            margin-bottom: 15px;
-        }
-        .category-group h3 {
-            margin: 0 0 10px 0;
-            font-size: 16px;
-        }
-        .category-item {
-            margin: 5px 0;
-        }
-        .category-item label {
+
+        .container {
             display: flex;
-            align-items: center;
+            height: calc(100vh - 100px);
+        }
+
+        #map {
+            flex: 3;
+            height: 100%;
+        }
+
+        .side-panel {
+            flex: 1;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            background: #fff;
+            box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+            min-width: 300px;
+            max-width: 400px;  /* הגבלת רוחב מקסימלי */
+            height: 100%;     /* גובה מלא */
+            display: block;   /* וידוא שהפאנל מוצג */
+        }
+
+        #institution-list {
+            margin-bottom: 20px;
+            max-height: calc(100vh - 400px);  /* גובה מקסימלי עם מרווח לכותרת ומקרא */
+            overflow-y: auto;
+            display: block;   /* וידוא שהרשימה מוצגת */
+        }
+
+        .institution-item {
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
             cursor: pointer;
+            background-color: white;
         }
-        .color-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
+
+        .institution-item:hover {
+            background: #f0f0f0;
+        }
+
+        .institution-item .name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .category-indicators {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+            flex-wrap: wrap;  /* מאפשר שבירת שורה של האינדיקטורים */
+        }
+
+        .category-indicator {
+            width: 20px;
+            height: 4px;
+            border-radius: 2px;
             display: inline-block;
-            margin-left: 8px;
         }
+
+        .category-indicator.thin {
+            height: 2px;
+        }
+
+        .category-indicator.medium {
+            height: 4px;
+        }
+
+        .category-indicator.thick {
+            height: 6px;
+        }
+
         .legend {
             background: white;
             padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+
+        .legend-section {
+            margin-bottom: 20px;
+        }
+        
+        .legend-section h4 {
+            margin: 10px 0;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .legend-items {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+        }
+        
+        .color-box {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+
+        .ring-example {
+            margin: 5px 0;
+            padding-right: 20px;
+            position: relative;
+        }
+
+        .ring-example::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            width: 15px;
+            background: #333;
+        }
+
+        .ring-example.thin::before { height: 2px; }
+        .ring-example.medium::before { height: 4px; }
+        .ring-example.thick::before { height: 6px; }
+
+        .institution-item {
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+        }
+
+        .institution-item .name {
+            font-weight: bold;
+            margin-bottom: 4px;
+            color: #333;
+        }
+
+        .institution-item .address {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .all-categories {
+            margin-top: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .category-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .category-label {
+            font-size: 12px;
+            color: #666;
+            min-width: 70px;
+            font-weight: bold;
+        }
+
+        .category-tag {
+            padding: 4px 8px;
+            border-radius: 12px;
+            color: white;
+            font-size: 11px;
+            display: inline-block;
+            margin: 2px 0;
         }
     </style>
 </head>
 <body>
-    <div id="map"></div>
-    <div class="control-panel">
-        <div class="category-group">
-            <h3>מה זה?</h3>
-            <div id="type-filters"></div>
+    <div class="header">
+        <h1>מיפוי מוסדות תרבות בבת ים</h1>
+        <p>המפה מציגה מוסדות תרבות, סוגי פעילויות וקהלי יעד</p>
+    </div>
+    
+    <div class="container">
+        <div class="side-panel">
+            <h2>מוסדות תרבות</h2>
+            <div id="institution-list"></div>
+            <div class="legend">
+                <h3>מקרא</h3>
+                <div class="ring-example thin">סוג מוסד</div>
+                <div class="ring-example medium">פעילויות</div>
+                <div class="ring-example thick">קהלי יעד</div>
+
+                <div class="legend-section">
+                    <h4>סוג מוסד</h4>
+                    <div class="legend-items">
+                        <div class="legend-item">
+                            <span class="color-box" style="background-color: #2196F3"></span>
+                            <span>ספריה</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="color-box" style="background-color: #4CAF50"></span>
+                            <span>אתר מורשת תרבותית</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="color-box" style="background-color: #9C27B0"></span>
+                            <span>מוסד תרבות (כללי)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="color-box" style="background-color: #FF9800"></span>
+                            <span>אולם מופעים</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="color-box" style="background-color: #F44336"></span>
+                            <span>מוזיאון</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="legend-section">
+                    <h4>פעילויות</h4>
+                    <div class="legend-items">
+                        <div class="legend-item">
+                            <span class="color-box" style="background-color: #E91E63"></span>
+                            <span>מופעים</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="color-box" style="background-color: #00BCD4"></span>
+                            <span>נותן שירותים</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="color-box" style="background-color: #FFC107"></span>
+                            <span>ערבי תרבות</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="color-box" style="background-color: #795548"></span>
+                            <span>סדנאות</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="color-box" style="background-color: #607D8B"></span>
+                            <span>חוגים</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="color-box" style="background-color: #8BC34A"></span>
+                            <span>תערוכות</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="legend-section">
+                    <h4>קהלי יעד</h4>
+                    <div class="legend-items">
+                        <div class="legend-item">
+                            <span class="color-box" style="background-color: #3F51B5"></span>
+                            <span>ידים 5-12</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="color-box" style="background-color: #009688"></span>
+                            <span>נוער 12-18</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="color-box" style="background-color: #FF5722"></span>
+                            <span>young adults 18-30</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="color-box" style="background-color: #9E9E9E"></span>
+                            <span>משפחות צעירות 30+</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="color-box" style="background-color: #FF4081"></span>
+                            <span>גיל שלישי 60+</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="color-box" style="background-color: #673AB7"></span>
+                            <span>קהל רחב</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="category-group">
-            <h3>מה עושים שם?</h3>
-            <div id="activity-filters"></div>
-        </div>
-        <div class="category-group">
-            <h3>למי זה מיועד?</h3>
-            <div id="audience-filters"></div>
-        </div>
+        <div id="map"></div>
     </div>
 
-    <!-- Leaflet JavaScript -->
+    <!-- Scripts -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    
-    <!-- נתונים -->
     <script src="data.js"></script>
-    
-    <!-- הקוד שלנו -->
     <script src="map.js"></script>
 </body>
-</html> 
+</html>

@@ -1,246 +1,134 @@
-// הגדרת צבעים לקטגוריות
-const categoryColors = {
-    // סוגי גופים אומנותיים
-    "ספריה": "#2196F3",
-    "אתר מורשת תרבותית": "#4CAF50",
-    "מוסד תרבות (כללי)": "#9C27B0",
-    "אולם מופעים": "#FF9800",
-    "מוזיאון": "#F44336",
+// Initialize the map with a suitable zoom level
+const map = L.map('map', {
+    dragging: true,
+    touchZoom: true,
+    scrollWheelZoom: true,
+    doubleClickZoom: true,
+    zoomControl: true
+}).setView([32.016789, 34.753456], 13); // Adjust the coordinates and zoom level as needed
+
+function updateInstitutionList() {
+    const institutionList = document.getElementById('institution-list');
+    institutionList.innerHTML = '';
     
-    // סוגי פעילויות
-    "מופעים": "#E91E63",
-    "נותן שירותים": "#00BCD4",
-    "ערבי תרבות": "#FFC107",
-    "סדנאות": "#795548",
-    "חוגים": "#607D8B",
-    "תערוכות": "#8BC34A",
-    
-    // קהלי יעד
-    "ילדים 5-12": "#3F51B5",
-    "נוער 12-18": "#009688",
-    "young adults 18-30": "#FF5722",
-    "משפחות צעירות 30+": "#9E9E9E",
-    "גיל שלישי 60+": "#FF4081",
-    "קהל רחב": "#673AB7"
-};
+    culturalData.sort((a, b) => a.name.localeCompare(b.name)).forEach(location => {
+        const item = document.createElement('div');
+        item.className = 'institution-item';
+        
+        // הוספת שם המוסד
+        const nameContainer = document.createElement('div');
+        nameContainer.className = 'name';
+        nameContainer.textContent = location.name;
+        
+        // יצירת מיכל לכל הקטגוריות
+        const allCategoriesContainer = document.createElement('div');
+        allCategoriesContainer.className = 'all-categories';
+        
+        // סוגי מוסד
+        if (location.types && location.types.length > 0) {
+            const typesContainer = document.createElement('div');
+            typesContainer.className = 'category-row';
+            
+            const typesLabel = document.createElement('span');
+            typesLabel.className = 'category-label';
+            typesLabel.textContent = 'סוג מוסד:';
+            typesContainer.appendChild(typesLabel);
+            
+            location.types.forEach(type => {
+                const tag = document.createElement('span');
+                tag.className = 'category-tag';
+                tag.style.backgroundColor = categoryColors[type];
+                tag.textContent = type;
 
-// יצירת המפה
-const map = L.map('map').setView([32.0167, 34.7500], 14);
+                // Add the category name in smaller text
+                const categoryName = document.createElement('span');
+                categoryName.className = 'category-name';
+                categoryName.textContent = ` (${type})`; // Display the name in parentheses
+                categoryName.style.fontSize = '10px'; // Adjust font size as needed
+                categoryName.style.color = '#666'; // Adjust color as needed
 
-// הוספת שכבת מפת רקע
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-}).addTo(map);
-
-// יונקציה לאיסוף כל סוגי הפעילויות הייחודיים מהנתונים
-function collectUniqueActivities() {
-    const activities = new Set();
-    culturalData.forEach(location => {
-        if (location.activity && Array.isArray(location.activity)) {
-            location.activity.forEach(activity => {
-                activities.add(activity);
+                typesContainer.appendChild(tag);
+                typesContainer.appendChild(categoryName);
             });
+            allCategoriesContainer.appendChild(typesContainer);
         }
-    });
-    return Array.from(activities);
-}
-
-// יצירת קבוצות שכבות
-const layersByType = {
-    "ספריה": L.layerGroup(),
-    "אתר מורשת תרבותית": L.layerGroup(),
-    "מוסד תרבות (כללי)": L.layerGroup(),
-    "אולם מופעים": L.layerGroup(),
-    "מוזיאון": L.layerGroup()
-};
-
-// יצירת קבוצות שכבות לפי הפעילויות שנאספו
-const uniqueActivities = collectUniqueActivities();
-const layersByActivity = {};
-uniqueActivities.forEach(activity => {
-    layersByActivity[activity] = L.layerGroup();
-});
-
-// הוספת צבעים דינמית לפעילויות חדשות
-const defaultColors = [
-    "#E91E63", "#00BCD4", "#FFC107", "#795548", "#607D8B", "#8BC34A",
-    "#FF5722", "#9C27B0", "#3F51B5", "#009688"
-];
-
-uniqueActivities.forEach((activity, index) => {
-    if (!categoryColors[activity]) {
-        categoryColors[activity] = defaultColors[index % defaultColors.length];
-    }
-});
-
-const layersByAudience = {
-    "ילדים 5-12": L.layerGroup(),
-    "נוער 12-18": L.layerGroup(),
-    "young adults 18-30": L.layerGroup(),
-    "משפחות צעירות 30+": L.layerGroup(),
-    "גיל שלישי 60+": L.layerGroup(),
-    "קהל רחב": L.layerGroup()
-};
-
-// פונקציה ליצירת תוכן חלון קופץ
-function createPopupContent(location) {
-    return `
-        <div class="popup-content">
-            <h3>${location.name}</h3>
-            ${location.address ? `<p><strong>כתובת:</strong> ${location.address}</p>` : ''}
-            ${location.type ? `<p><strong>סוג:</strong> ${location.type}</p>` : ''}
-            ${location.targetAudience ? `<p><strong>קהל יעד:</strong> ${location.targetAudience}</p>` : ''}
-            ${location.activity && location.activity.length > 0 ? 
-                `<p><strong>פעילויות:</strong> ${location.activity.join(', ')}</p>` : ''}
-            ${location.website ? `<p><a href="${location.website}" target="_blank">לאתר האינטרנט</a></p>` : ''}
-        </div>
-    `;
-}
-
-// פונקציה ליצירת תיבות סימון בפאנל
-function createFilterCheckboxes() {
-    const typeDiv = document.getElementById('type-filters');
-    const activityDiv = document.getElementById('activity-filters');
-    const audienceDiv = document.getElementById('audience-filters');
-
-    // יצירת תיבות סימון לסוג המקום
-    for (let type in layersByType) {
-        const div = document.createElement('div');
-        div.className = 'category-item';
-        const label = document.createElement('label');
         
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.checked = true;
-        checkbox.dataset.layer = 'type';
-        checkbox.dataset.value = type;
+        // פעילויות
+        if (location.activities && location.activities.length > 0) {
+            const activitiesContainer = document.createElement('div');
+            activitiesContainer.className = 'category-row';
+            
+            const activitiesLabel = document.createElement('span');
+            activitiesLabel.className = 'category-label';
+            activitiesLabel.textContent = 'פעילויות:';
+            activitiesContainer.appendChild(activitiesLabel);
+            
+            location.activities.forEach(activity => {
+                const tag = document.createElement('span');
+                tag.className = 'category-tag';
+                tag.style.backgroundColor = activityColors[activity];
+                tag.textContent = activity;
 
-        const colorDot = document.createElement('span');
-        colorDot.className = 'color-dot';
-        colorDot.style.backgroundColor = categoryColors[type];
+                // Add the activity name in smaller text
+                const activityName = document.createElement('span');
+                activityName.className = 'activity-name';
+                activityName.textContent = ` (${activity})`; // Display the name in parentheses
+                activityName.style.fontSize = '10px'; // Adjust font size as needed
+                activityName.style.color = '#666'; // Adjust color as needed
 
-        const text = document.createTextNode(type);
-
-        label.appendChild(checkbox);
-        label.appendChild(colorDot);
-        label.appendChild(text);
-        div.appendChild(label);
-        typeDiv.appendChild(div);
-    }
-
-    // יצירת תיבות סימון לסוג פעילות
-    for (let activity in layersByActivity) {
-        const div = document.createElement('div');
-        div.className = 'category-item';
-        const label = document.createElement('label');
+                activitiesContainer.appendChild(tag);
+                activitiesContainer.appendChild(activityName);
+            });
+            allCategoriesContainer.appendChild(activitiesContainer);
+        }
         
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.checked = true;
-        checkbox.dataset.layer = 'activity';
-        checkbox.dataset.value = activity;
+        // קהלי יעד
+        if (location.targetAudiences && location.targetAudiences.length > 0) {
+            const audiencesContainer = document.createElement('div');
+            audiencesContainer.className = 'category-row';
+            
+            const audiencesLabel = document.createElement('span');
+            audiencesLabel.className = 'category-label';
+            audiencesLabel.textContent = 'קהלי יעד:';
+            audiencesContainer.appendChild(audiencesLabel);
+            
+            location.targetAudiences.forEach(audience => {
+                const tag = document.createElement('span');
+                tag.className = 'category-tag';
+                tag.style.backgroundColor = audienceColors[audience];
+                tag.textContent = audience;
 
-        const colorDot = document.createElement('span');
-        colorDot.className = 'color-dot';
-        colorDot.style.backgroundColor = categoryColors[activity];
+                // Add the audience name in smaller text
+                const audienceName = document.createElement('span');
+                audienceName.className = 'audience-name';
+                audienceName.textContent = ` (${audience})`; // Display the name in parentheses
+                audienceName.style.fontSize = '10px'; // Adjust font size as needed
+                audienceName.style.color = '#666'; // Adjust color as needed
 
-        const text = document.createTextNode(activity);
-
-        label.appendChild(checkbox);
-        label.appendChild(colorDot);
-        label.appendChild(text);
-        div.appendChild(label);
-        activityDiv.appendChild(div);
-    }
-
-    // יצירת תיבות סימון לקהל יעד
-    for (let audience in layersByAudience) {
-        const div = document.createElement('div');
-        div.className = 'category-item';
-        const label = document.createElement('label');
+                audiencesContainer.appendChild(tag);
+                audiencesContainer.appendChild(audienceName);
+            });
+            allCategoriesContainer.appendChild(audiencesContainer);
+        }
         
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.checked = true;
-        checkbox.dataset.layer = 'audience';
-        checkbox.dataset.value = audience;
-
-        const colorDot = document.createElement('span');
-        colorDot.className = 'color-dot';
-        colorDot.style.backgroundColor = categoryColors[audience];
-
-        const text = document.createTextNode(audience);
-
-        label.appendChild(checkbox);
-        label.appendChild(colorDot);
-        label.appendChild(text);
-        div.appendChild(label);
-        audienceDiv.appendChild(div);
-    }
-
-    // הוספת מאזיני אירועים
-    document.querySelectorAll('.category-item input').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            const layerType = this.dataset.layer;
-            const value = this.dataset.value;
-            const layers = {
-                'type': layersByType,
-                'activity': layersByActivity,
-                'audience': layersByAudience
-            };
-            const layer = layers[layerType][value];
-
-            if (this.checked) {
-                map.addLayer(layer);
-            } else {
-                map.removeLayer(layer);
-            }
-        });
+        // הרכבת הפריט
+        item.appendChild(nameContainer);
+        item.appendChild(allCategoriesContainer);
+        
+        institutionList.appendChild(item);
     });
 }
 
-// יצירת סמנים והוספתם לשכבות
-culturalData.forEach(location => {
-    function createMarker() {
-        return L.circleMarker([location.lat, location.lon], {
-            radius: 8,
-            fillColor: categoryColors[location.type] || categoryColors["מוסד תרבות (כללי)"],
-            color: "#000",
-            weight: 1,
-            opacity: 1,
-            fillOpacity: 0.8
-        }).bindPopup(createPopupContent(location));
-    }
+function addMarkersToMap() {
+    culturalData.forEach((location, index) => {
+        const offset = index * 0.0001; // Small offset for each marker
+        const marker = L.marker([location.lat + offset, location.lon]).addTo(map);
+        
+        // Add a popup with the institution name
+        marker.bindPopup(location.name, { offset: L.point(0, -20) });
+    });
+}
 
-    // הוספה לשכבת סוג המקום
-    if (location.type && layersByType[location.type]) {
-        layersByType[location.type].addLayer(createMarker());
-    }
+// Call the function to add markers
+addMarkersToMap();
 
-    // הוספה לשכבות פעילות
-    if (location.activity) {
-        location.activity.forEach(activity => {
-            if (layersByActivity[activity]) {
-                layersByActivity[activity].addLayer(createMarker());
-            }
-        });
-    }
-
-    // הוספה לשכבות קהל יעד
-    if (location.targetAudience) {
-        location.targetAudience.split(",").forEach(audience => {
-            audience = audience.trim();
-            if (layersByAudience[audience]) {
-                layersByAudience[audience].addLayer(createMarker());
-            }
-        });
-    }
-});
-
-// הוספת כל השכבות למפה כברירת מחדל
-Object.values(layersByType).forEach(layer => layer.addTo(map));
-Object.values(layersByActivity).forEach(layer => layer.addTo(map));
-Object.values(layersByAudience).forEach(layer => layer.addTo(map));
-
-// יצירת הפאנל
-createFilterCheckboxes();
