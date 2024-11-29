@@ -7,6 +7,100 @@ const map = L.map('map', {
     zoomControl: true
 }).setView([32.016789, 34.753456], 13); // Adjust the coordinates and zoom level as needed
 
+// Add CartoDB tiles instead of OpenStreetMap
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    subdomains: 'abcd',
+    maxZoom: 19
+}).addTo(map);
+
+// הגדרת צבעי הקטגוריות
+const categoryColors = {
+    "ספריה": "#2196F3",
+    "אתר מורשת תרבותית": "#4CAF50",
+    "מוסד תרבות (כללי)": "#9C27B0",
+    "אולם מופעים": "#FF9800",
+    "מוזיאון": "#F44336"
+};
+
+const activityColors = {
+    "מופעים": "#E91E63",
+    "נותן שירותים": "#00BCD4",
+    "ערבי תרבות": "#FFC107",
+    "סדנאות": "#795548",
+    "חוגים": "#607D8B",
+    "תערוכות": "#8BC34A"
+};
+
+const audienceColors = {
+    "ילדים 5-12": "#3F51B5",
+    "נוער 12-18": "#009688",
+    "young adults 18-30": "#FF5722",
+    "משפחות צעירות 30+": "#9E9E9E",
+    "גיל שלישי 60+": "#FF4081",
+    "קהל רחב": "#673AB7"
+};
+
+// Object to store markers and circles for each location
+const mapElements = {};
+
+function addMarkersToMap() {
+    culturalData.forEach((location, index) => {
+        const marker = L.marker([location.lat, location.lon]).addTo(map);
+        
+        // Add circles for each category
+        const circles = [];
+        
+        // Institution type circles (innermost)
+        if (location.types) {
+            location.types.forEach((type, i) => {
+                const circle = L.circle([location.lat, location.lon], {
+                    color: categoryColors[type],
+                    fillColor: categoryColors[type],
+                    fillOpacity: 0.7,
+                    radius: 30
+                }).addTo(map);
+                circles.push(circle);
+            });
+        }
+        
+        // Activities circles (middle)
+        if (location.activities) {
+            location.activities.forEach((activity, i) => {
+                const circle = L.circle([location.lat, location.lon], {
+                    color: activityColors[activity],
+                    fillColor: activityColors[activity],
+                    fillOpacity: 0.5,
+                    radius: 50
+                }).addTo(map);
+                circles.push(circle);
+            });
+        }
+        
+        // Target audience circles (outermost)
+        if (location.targetAudiences) {
+            location.targetAudiences.forEach((audience, i) => {
+                const circle = L.circle([location.lat, location.lon], {
+                    color: audienceColors[audience],
+                    fillColor: audienceColors[audience],
+                    fillOpacity: 0.3,
+                    radius: 70
+                }).addTo(map);
+                circles.push(circle);
+            });
+        }
+
+        // Add popup with institution name
+        marker.bindPopup(location.name);
+        
+        // Store marker and circles for this location
+        mapElements[location.name] = {
+            marker: marker,
+            circles: circles
+        };
+    });
+}
+
 function updateInstitutionList() {
     const institutionList = document.getElementById('institution-list');
     institutionList.innerHTML = '';
@@ -14,6 +108,31 @@ function updateInstitutionList() {
     culturalData.sort((a, b) => a.name.localeCompare(b.name)).forEach(location => {
         const item = document.createElement('div');
         item.className = 'institution-item';
+        
+        // Add click handler to focus on the institution
+        item.addEventListener('click', () => {
+            // Center map on location
+            map.setView([location.lat, location.lon], 15);
+            
+            // Open the popup
+            mapElements[location.name].marker.openPopup();
+            
+            // Highlight the circles
+            mapElements[location.name].circles.forEach(circle => {
+                circle.setStyle({
+                    weight: 3,
+                    opacity: 1
+                });
+                
+                // Reset style after 2 seconds
+                setTimeout(() => {
+                    circle.setStyle({
+                        weight: 1,
+                        opacity: 0.8
+                    });
+                }, 2000);
+            });
+        });
         
         // הוספת שם המוסד
         const nameContainer = document.createElement('div');
@@ -119,16 +238,7 @@ function updateInstitutionList() {
     });
 }
 
-function addMarkersToMap() {
-    culturalData.forEach((location, index) => {
-        const offset = index * 0.0001; // Small offset for each marker
-        const marker = L.marker([location.lat + offset, location.lon]).addTo(map);
-        
-        // Add a popup with the institution name
-        marker.bindPopup(location.name, { offset: L.point(0, -20) });
-    });
-}
-
-// Call the function to add markers
+// קריאה לפונקציות להצגת המידע
 addMarkersToMap();
+updateInstitutionList();
 
