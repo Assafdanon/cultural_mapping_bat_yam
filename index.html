@@ -308,7 +308,15 @@
 
     <!-- Scripts -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Add timestamp to prevent caching
+        function addTimestamp(url) {
+            return `${url}?v=${new Date().getTime()}`;
+        }
+    </script>
     <script src="data.js"></script>
-    <script src="map.js"></script>
+    <script>
+        document.write(`<script src="${addTimestamp('map.js')}"><\/script>`);
+    </script>
 </body>
 </html>
