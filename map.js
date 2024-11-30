@@ -287,22 +287,31 @@ document.querySelectorAll('.legend-item input[type="checkbox"]').forEach(checkbo
     });
 });
 
-// פונקציית matchesFilters מפושטת
+// פונקציית matchesFilters מפושטת עם טיפול ב-null
 function matchesFilters(institution) {
+    // בדיקה שהמוסד קיים ושיש לו את כל המאפיינים הנדרשים
+    if (!institution || !institution.types || !institution.activities || !institution.targetAudiences) {
+        console.warn(`Missing required properties for institution: ${institution?.name || 'unknown'}`);
+        return false;
+    }
+
     // בדיקת סוגי מוסדות
-    const typeMatch = institution.types.some(type => 
-        document.getElementById(`types-${type}`).checked
-    );
+    const typeMatch = institution.types.some(type => {
+        const checkbox = document.getElementById(`types-${type}`);
+        return checkbox ? checkbox.checked : false;
+    });
 
     // בדיקת פעילויות
-    const activityMatch = institution.activities.some(activity => 
-        document.getElementById(`activities-${activity}`).checked
-    );
+    const activityMatch = institution.activities.some(activity => {
+        const checkbox = document.getElementById(`activities-${activity}`);
+        return checkbox ? checkbox.checked : false;
+    });
 
     // בדיקת קהלי יעד
-    const audienceMatch = institution.targetAudiences.some(audience => 
-        document.getElementById(`audiences-${audience}`).checked
-    );
+    const audienceMatch = institution.targetAudiences.some(audience => {
+        const checkbox = document.getElementById(`audiences-${audience}`);
+        return checkbox ? checkbox.checked : false;
+    });
 
     return typeMatch && activityMatch && audienceMatch;
 }
@@ -327,13 +336,26 @@ function updateVisibility() {
     updateInstitutionList();
 }
 
-// Update the institution list function to respect filters
+// Update the institution list function with null checking
 function updateInstitutionList() {
     const institutionList = document.getElementById('institution-list');
+    if (!institutionList) {
+        console.error('Institution list element not found');
+        return;
+    }
+    
     institutionList.innerHTML = '';
     
-    culturalData
-        .filter(location => matchesFilters(location))
+    const validInstitutions = culturalData.filter(location => {
+        // Check if location has all required properties
+        if (!location || !location.name || !location.lat || !location.lon) {
+            console.warn(`Invalid institution data:`, location);
+            return false;
+        }
+        return matchesFilters(location);
+    });
+
+    validInstitutions
         .sort((a, b) => a.name.localeCompare(b.name))
         .forEach(location => {
             const item = document.createElement('div');
