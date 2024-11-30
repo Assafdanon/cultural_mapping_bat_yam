@@ -34,35 +34,35 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
 
 // הגדרת צבעי הקטגוריות
 const categoryColors = {
-    "ספריה": "#2196F3",
-    "אתר מורשת תרבותית": "#4CAF50",
-    "מוסד תרבות (כללי)": "#9C27B0",
-    "אולם מופעים": "#FF9800",
-    "מוזיאון": "#F44336",
-    "מרכזים קהילתיים (מתנ\"ס)": "#795548",
-    "גלריה": "#009688",
-    "אומנות וקהילה": "#607D8B"
+    "ספריה": "#1E88E5",
+    "אתר מורשת תרבותית": "#43A047",
+    "מוסד תרבות (כללי)": "#8E24AA",
+    "אולם מופעים": "#FB8C00",
+    "מוזיאון": "#E53935",
+    "מרכזים קהילתיים (מתנ\"ס)": "#6D4C41",
+    "גלריה": "#00897B",
+    "אומנות וקהילה": "#546E7A"
 };
 
 const activityColors = {
-    "מופעים": "#E91E63",
-    "נותן שירותים": "#00BCD4",
-    "ערבי תרבות": "#FFC107",
-    "סדנאות": "#795548",
-    "חוגים": "#607D8B",
-    "תערוכות": "#8BC34A",
-    "ליווי אמנים ויוצרים מקצועיים": "#FF5722",
-    "תוכניות הכשרה ולימודים": "#3F51B5",
-    "מחול": "#9C27B0"
+    "מופעים": "#D81B60",
+    "נותן שירותים": "#039BE5",
+    "ערבי תרבות": "#FDD835",
+    "סדנאות": "#8D6E63",
+    "חוגים": "#546E7A",
+    "תערוכות": "#7CB342",
+    "ליווי אמנים ויוצרים מקצועיים": "#F4511E",
+    "תוכניות הכשרה ולימודים": "#3949AB",
+    "מחול": "#8E24AA"
 };
 
 const audienceColors = {
-    "ילדים 5-12": "#3F51B5",
-    "נוער 12-18": "#009688",
-    "young adults 18-30": "#FF5722",
+    "ילדים 5-12": "#3949AB",
+    "נוער 12-18": "#00897B",
+    "young adults 18-30": "#F4511E",
     "משפחות צעירות 30+": "#9E9E9E",
     "גיל שלישי 60+": "#FF4081",
-    "קהל רחב": "#673AB7"
+    "קהל רחב": "#5E35B1"
 };
 
 // Object to store markers and circles for each location
@@ -410,16 +410,7 @@ function updateInstitutionList() {
                     tag.className = 'category-tag';
                     tag.style.backgroundColor = categoryColors[type];
                     tag.textContent = type;
-
-                    // Add the category name in smaller text
-                    const categoryName = document.createElement('span');
-                    categoryName.className = 'category-name';
-                    categoryName.textContent = ` (${type})`; // Display the name in parentheses
-                    categoryName.style.fontSize = '10px'; // Adjust font size as needed
-                    categoryName.style.color = '#666'; // Adjust color as needed
-
                     typesContainer.appendChild(tag);
-                    typesContainer.appendChild(categoryName);
                 });
                 allCategoriesContainer.appendChild(typesContainer);
             }
@@ -439,16 +430,7 @@ function updateInstitutionList() {
                     tag.className = 'category-tag';
                     tag.style.backgroundColor = activityColors[activity];
                     tag.textContent = activity;
-
-                    // Add the activity name in smaller text
-                    const activityName = document.createElement('span');
-                    activityName.className = 'activity-name';
-                    activityName.textContent = ` (${activity})`; // Display the name in parentheses
-                    activityName.style.fontSize = '10px'; // Adjust font size as needed
-                    activityName.style.color = '#666'; // Adjust color as needed
-
                     activitiesContainer.appendChild(tag);
-                    activitiesContainer.appendChild(activityName);
                 });
                 allCategoriesContainer.appendChild(activitiesContainer);
             }
@@ -468,16 +450,7 @@ function updateInstitutionList() {
                     tag.className = 'category-tag';
                     tag.style.backgroundColor = audienceColors[audience];
                     tag.textContent = audience;
-
-                    // Add the audience name in smaller text
-                    const audienceName = document.createElement('span');
-                    audienceName.className = 'audience-name';
-                    audienceName.textContent = ` (${audience})`; // Display the name in parentheses
-                    audienceName.style.fontSize = '10px'; // Adjust font size as needed
-                    audienceName.style.color = '#666'; // Adjust color as needed
-
                     audiencesContainer.appendChild(tag);
-                    audiencesContainer.appendChild(audienceName);
                 });
                 allCategoriesContainer.appendChild(audiencesContainer);
             }
